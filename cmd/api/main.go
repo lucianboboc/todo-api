@@ -26,7 +26,7 @@ func main() {
 
 	s := http.Server{
 		Addr:         fmt.Sprintf(":%d", conf.Port),
-		Handler:      routes(),
+		Handler:      http.DefaultServeMux, //TODO: Add routes for users, todos and auth
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 20,
