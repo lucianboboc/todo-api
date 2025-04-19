@@ -2,6 +2,8 @@ package users
 
 import (
 	"context"
+	"errors"
+	"github.com/lucianboboc/todo-api/internal/intrastructure/database"
 	"github.com/lucianboboc/todo-api/internal/intrastructure/security"
 )
 
@@ -29,13 +31,37 @@ func (s service) Create(ctx context.Context, user *User, password string) error 
 		return err
 	}
 	user.PasswordHash = passwordHash
-	return s.repository.Create(ctx, user)
+	err = s.repository.Create(ctx, user)
+	if err != nil {
+		switch {
+		case errors.Is(err, database.ErrRecordAlreadyExists):
+			return ErrUserAlreadyExists
+		}
+		return err
+	}
+	return nil
 }
 
 func (s service) GetByID(ctx context.Context, id int) (*User, error) {
-	return s.repository.GetByID(ctx, id)
+	user, err := s.repository.GetByID(ctx, id)
+	if err != nil {
+		switch {
+		case errors.Is(err, database.ErrNoRecordsFound):
+			return nil, ErrUserNotFound
+		}
+		return nil, err
+	}
+	return user, nil
 }
 
 func (s service) GetByEmail(ctx context.Context, email string) (*User, error) {
-	return s.repository.GetByEmail(ctx, email)
+	user, err := s.repository.GetByEmail(ctx, email)
+	if err != nil {
+		switch {
+		case errors.Is(err, database.ErrNoRecordsFound):
+			return nil, ErrUserNotFound
+		}
+		return nil, err
+	}
+	return user, nil
 }
