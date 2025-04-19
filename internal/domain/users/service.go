@@ -9,24 +9,25 @@ import (
 
 type Service interface {
 	Create(ctx context.Context, user *User, password string) error
+	GetUsers(ctx context.Context) ([]User, error)
 	GetByID(ctx context.Context, id int) (*User, error)
 	GetByEmail(ctx context.Context, email string) (*User, error)
 }
 
-func NewService(passwordService security.Service, repository Repository) Service {
+func NewService(securityService security.Service, repository Repository) Service {
 	return service{
-		passwordService: passwordService,
+		securityService: securityService,
 		repository:      repository,
 	}
 }
 
 type service struct {
-	passwordService security.Service
+	securityService security.Service
 	repository      Repository
 }
 
 func (s service) Create(ctx context.Context, user *User, password string) error {
-	passwordHash, err := s.passwordService.HashPassword(password)
+	passwordHash, err := s.securityService.HashPassword(password)
 	if err != nil {
 		return err
 	}
@@ -40,6 +41,10 @@ func (s service) Create(ctx context.Context, user *User, password string) error 
 		return err
 	}
 	return nil
+}
+
+func (s service) GetUsers(ctx context.Context) ([]User, error) {
+	return s.repository.GetUsers(ctx)
 }
 
 func (s service) GetByID(ctx context.Context, id int) (*User, error) {

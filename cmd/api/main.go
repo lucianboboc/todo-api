@@ -1,13 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"github.com/lucianboboc/todo-api/config"
+	"github.com/lucianboboc/todo-api/internal/domain/auth"
+	"github.com/lucianboboc/todo-api/internal/domain/todos"
+	"github.com/lucianboboc/todo-api/internal/domain/users"
 	"github.com/lucianboboc/todo-api/internal/intrastructure/database"
+	"github.com/lucianboboc/todo-api/internal/intrastructure/jsonwebtoken"
+	"github.com/lucianboboc/todo-api/internal/intrastructure/security"
+	"github.com/lucianboboc/todo-api/internal/transport/http/handlers"
 	"log/slog"
 	"net/http"
 	"os"
-	"time"
 )
 
 func main() {
@@ -22,20 +26,27 @@ func main() {
 	}
 	defer db.Close()
 
+	mux := http.NewServeMux()
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	s := http.Server{
-		Addr:         fmt.Sprintf(":%d", conf.Port),
-		Handler:      http.DefaultServeMux, //TODO: Add routes for users, todos and auth
-		IdleTimeout:  time.Minute,
-		ReadTimeout:  time.Second * 10,
-		WriteTimeout: time.Second * 20,
-		ErrorLog:     slog.NewLogLogger(logger.Handler(), slog.LevelError),
-	}
+	usersRepository := users.NewRepository(db)
+	todosRepository := todos.NewRepository(db)
 
-	logger.Info("Starting server", slog.String("addr", s.Addr))
-	err = s.ListenAndServe()
-	if err != nil {
-		panic(err)
-	}
+	securityService := security.NewService()
+	usersService := users.NewService(securityService, usersRepository)
+	jwtService := jsonwebtoken.NewService(conf.JWTSecret)
+	todosService := todos.NewService(todosRepository)
+	authService := auth.NewService(usersService, securityService, jwtService)
+
+	authHandler := handlers.NewAuthHandler(authService, logger)
+	authHandler.RegisterRoutes(mux)
+
+	usersHandler := handlers.NewUserHandler(usersService, jwtService, logger)
+	usersHandler.RegisterRoutes(mux)
+
+	todosHandler := handlers.NewTodoHandler(todosService, usersService, jwtService, logger)
+	todosHandler.RegisterRoutes(mux)
+
+	app := newApplication(mux, conf, logger)
+	app.Start()
 }

@@ -7,14 +7,14 @@ import (
 	"github.com/lucianboboc/todo-api/internal/intrastructure/env"
 )
 
-type config struct {
+type Config struct {
 	Database  *database.PostgresConfig
 	JWTSecret string
 	Port      int
 }
 
-func LoadEnv() (*config, error) {
-	var cfg config
+func LoadEnv() (*Config, error) {
+	var cfg Config
 	err := godotenv.Load()
 	if err != nil {
 		return nil, err

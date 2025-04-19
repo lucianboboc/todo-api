@@ -2,6 +2,8 @@ package todos
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"github.com/lucianboboc/todo-api/internal/intrastructure/database"
 )
 
@@ -49,6 +51,10 @@ func (r repository) GetById(ctx context.Context, id int) (*Todo, error) {
 		&todo.CreatedAt,
 	)
 	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, database.ErrNoRecordsFound
+		}
 		return nil, err
 	}
 	return &todo, nil

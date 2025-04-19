@@ -9,6 +9,7 @@ import (
 
 type Repository interface {
 	Create(ctx context.Context, user *User) error
+	GetUsers(ctx context.Context) ([]User, error)
 	GetByID(ctx context.Context, id int) (*User, error)
 	GetByEmail(ctx context.Context, email string) (*User, error)
 }
@@ -41,6 +42,38 @@ func (r repository) Create(ctx context.Context, user *User) error {
 		return err
 	}
 	return nil
+}
+
+func (r repository) GetUsers(ctx context.Context) ([]User, error) {
+	query := `
+	SELECT id, first_name, last_name, email, password_hash, created_at FROM users
+`
+	rows, err := r.DB.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	res := make([]User, 0)
+	for rows.Next() {
+		var user User
+		err := rows.Scan(
+			&user.ID,
+			&user.FirstName,
+			&user.LastName,
+			&user.Email,
+			&user.PasswordHash,
+			&user.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, user)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (r repository) GetByID(ctx context.Context, id int) (*User, error) {

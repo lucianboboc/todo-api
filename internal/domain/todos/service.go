@@ -1,9 +1,13 @@
 package todos
 
-import "context"
+import (
+	"context"
+	"errors"
+	"github.com/lucianboboc/todo-api/internal/intrastructure/database"
+)
 
 type Service interface {
-	Create(ctx context.Context, todo Todo) error
+	Create(ctx context.Context, todo *Todo) error
 	GetById(ctx context.Context, id int) (*Todo, error)
 	GetAll(ctx context.Context) ([]Todo, error)
 }
@@ -18,14 +22,21 @@ type service struct {
 	repository Repository
 }
 
-func (s service) Create(ctx context.Context, todo Todo) error {
-	return nil
+func (s service) Create(ctx context.Context, todo *Todo) error {
+	return s.repository.Create(ctx, todo)
 }
 
 func (s service) GetById(ctx context.Context, id int) (*Todo, error) {
-	return nil, nil
+	todo, err := s.repository.GetById(ctx, id)
+	if err != nil {
+		switch {
+		case errors.Is(err, database.ErrNoRecordsFound):
+			return nil, ErrTodoNotFound
+		}
+	}
+	return todo, nil
 }
 
 func (s service) GetAll(ctx context.Context) ([]Todo, error) {
-	return nil, nil
+	return s.repository.GetAll(ctx)
 }
