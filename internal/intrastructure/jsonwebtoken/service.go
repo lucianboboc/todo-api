@@ -48,7 +48,7 @@ func (s service) ValidateToken(token string) (int, error) {
 		jwt.WithExpirationRequired(),
 		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Name}),
 	)
-	if err != nil {
+	if err != nil || !jwtToken.Valid {
 		return 0, err
 	}
 

@@ -3,8 +3,8 @@ package config
 import (
 	"errors"
 	"github.com/joho/godotenv"
-	"github.com/lucianboboc/todo-api/internal/pkg/database"
-	"github.com/lucianboboc/todo-api/internal/pkg/env"
+	"github.com/lucianboboc/todo-api/internal/intrastructure/database"
+	"github.com/lucianboboc/todo-api/internal/intrastructure/env"
 )
 
 type config struct {

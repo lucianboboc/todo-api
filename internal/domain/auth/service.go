@@ -2,27 +2,27 @@ package auth
 
 import (
 	"context"
+	"github.com/lucianboboc/todo-api/internal/domain/users"
+	"github.com/lucianboboc/todo-api/internal/intrastructure/jsonwebtoken"
+	"github.com/lucianboboc/todo-api/internal/intrastructure/security"
 	"time"
-	"todo_api/internal/pkg/jsonwebtoken"
-	"todo_api/internal/pkg/password"
-	"todo_api/internal/services/users"
 )
 
 type Service interface {
 	Login(ctx context.Context, email, password string) (string, error)
 }
 
-func NewService(usersService users.Service, passwordService password.Service, jwtService jsonwebtoken.Service) Service {
+func NewService(usersService users.Service, securityService security.Service, jwtService jsonwebtoken.Service) Service {
 	return service{
 		usersService:    usersService,
-		passwordService: passwordService,
+		securityService: securityService,
 		jwtService:      jwtService,
 	}
 }
 
 type service struct {
 	usersService    users.Service
-	passwordService password.Service
+	securityService security.Service
 	jwtService      jsonwebtoken.Service
 }
 
@@ -32,7 +32,7 @@ func (s service) Login(ctx context.Context, email, password string) (string, err
 		return "", err
 	}
 
-	err = s.passwordService.ComparePassword(password, user.PasswordHash)
+	err = s.securityService.ComparePassword(password, user.PasswordHash)
 	if err != nil {
 		return "", err
 	}

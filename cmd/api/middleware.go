@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/lucianboboc/todo-api/internal/pkg/jsonwebtoken"
-	"github.com/lucianboboc/todo-api/internal/services/users"
+	"github.com/lucianboboc/todo-api/internal/domain/users"
+	"github.com/lucianboboc/todo-api/internal/intrastructure/jsonwebtoken"
 	"net/http"
 	"strings"
 )

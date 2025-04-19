@@ -1,10 +1,6 @@
 package database
 
-import (
-	"database/sql"
-	"fmt"
-	_ "github.com/jackc/pgx/v5/stdlib"
-)
+import "fmt"
 
 type PostgresConfig struct {
 	Host     string
@@ -33,18 +29,4 @@ func (c *PostgresConfig) String() string {
 		c.Port,
 		c.DBName,
 	)
-}
-
-func Open(config *PostgresConfig) (*sql.DB, error) {
-	db, err := sql.Open("pgx", config.String())
-	if err != nil {
-		return nil, err
-	}
-
-	err = db.Ping()
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
 }

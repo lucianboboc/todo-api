@@ -2,7 +2,7 @@ package users
 
 import (
 	"context"
-	"github.com/lucianboboc/todo-api/internal/pkg/password"
+	"github.com/lucianboboc/todo-api/internal/intrastructure/security"
 )
 
 type Service interface {
@@ -11,7 +11,7 @@ type Service interface {
 	GetByEmail(ctx context.Context, email string) (*User, error)
 }
 
-func NewService(passwordService password.Service, repository Repository) Service {
+func NewService(passwordService security.Service, repository Repository) Service {
 	return service{
 		passwordService: passwordService,
 		repository:      repository,
@@ -19,7 +19,7 @@ func NewService(passwordService password.Service, repository Repository) Service
 }
 
 type service struct {
-	passwordService password.Service
+	passwordService security.Service
 	repository      Repository
 }
 

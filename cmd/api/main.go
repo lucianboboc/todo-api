@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/lucianboboc/todo-api/config"
-	"github.com/lucianboboc/todo-api/internal/pkg/database"
+	"github.com/lucianboboc/todo-api/internal/intrastructure/database"
 	"log/slog"
 	"net/http"
 	"os"
@@ -16,7 +16,7 @@ func main() {
 		panic(err)
 	}
 
-	db, err := database.Open(conf.Database)
+	db, err := database.NewDatabase(conf.Database)
 	if err != nil {
 		panic(err)
 	}
