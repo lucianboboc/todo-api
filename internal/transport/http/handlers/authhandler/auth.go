@@ -1,4 +1,4 @@
-package handlers
+package authhandler
 
 import (
 	"github.com/lucianboboc/todo-api/internal/domain/auth"
@@ -6,22 +6,22 @@ import (
 	"net/http"
 )
 
-type AuthHandler struct {
+type Handler struct {
 	authService auth.Service
 	logger      *slog.Logger
 }
 
-func NewAuthHandler(authService auth.Service, logger *slog.Logger) *AuthHandler {
-	return &AuthHandler{
+func NewHandler(authService auth.Service, logger *slog.Logger) *Handler {
+	return &Handler{
 		authService: authService,
 		logger:      logger,
 	}
 }
 
 // TODO: Implement handlers with data validation
-func (h *AuthHandler) RegisterRoutes(mux *http.ServeMux) {
+func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/auth/login", h.LoginHandler)
 }
 
-func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 }

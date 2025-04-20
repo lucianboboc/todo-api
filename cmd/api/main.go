@@ -8,7 +8,9 @@ import (
 	"github.com/lucianboboc/todo-api/internal/intrastructure/database"
 	"github.com/lucianboboc/todo-api/internal/intrastructure/jsonwebtoken"
 	"github.com/lucianboboc/todo-api/internal/intrastructure/security"
-	"github.com/lucianboboc/todo-api/internal/transport/http/handlers"
+	"github.com/lucianboboc/todo-api/internal/transport/http/handlers/authhandler"
+	"github.com/lucianboboc/todo-api/internal/transport/http/handlers/todoshandler"
+	"github.com/lucianboboc/todo-api/internal/transport/http/handlers/usershandler"
 	"log/slog"
 	"net/http"
 	"os"
@@ -38,13 +40,13 @@ func main() {
 	todosService := todos.NewService(todosRepository)
 	authService := auth.NewService(usersService, securityService, jwtService)
 
-	authHandler := handlers.NewAuthHandler(authService, logger)
+	authHandler := authhandler.NewHandler(authService, logger)
 	authHandler.RegisterRoutes(mux)
 
-	usersHandler := handlers.NewUserHandler(usersService, jwtService, logger)
+	usersHandler := usershandler.NewHandler(usersService, jwtService, logger)
 	usersHandler.RegisterRoutes(mux)
 
-	todosHandler := handlers.NewTodoHandler(todosService, usersService, jwtService, logger)
+	todosHandler := todoshandler.NewHandler(todosService, usersService, jwtService, logger)
 	todosHandler.RegisterRoutes(mux)
 
 	app := newApplication(mux, conf, logger)
