@@ -31,7 +31,8 @@ func (r repository) Create(ctx context.Context, user *User) error {
 	RETURNING id, created_at
 `
 
-	err := r.DB.QueryRowContext(ctx, query, user.FirstName, user.LastName, user.Email, user.PasswordHash).Scan(
+	args := []any{user.FirstName, user.LastName, user.Email, user.PasswordHash}
+	err := r.DB.QueryRowContext(ctx, query, args...).Scan(
 		&user.ID,
 		&user.CreatedAt,
 	)

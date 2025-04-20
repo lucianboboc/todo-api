@@ -46,13 +46,13 @@ func (d *database) Close() error {
 }
 
 func (d *database) QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error) {
-	return d.DB.QueryContext(ctx, query, args)
+	return d.DB.QueryContext(ctx, query, args...)
 }
 
 func (d *database) QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row {
-	return d.DB.QueryRowContext(ctx, query, args)
+	return d.DB.QueryRowContext(ctx, query, args...)
 }
 
 func (d *database) ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error) {
-	return d.DB.ExecContext(ctx, query, args)
+	return d.DB.ExecContext(ctx, query, args...)
 }

@@ -1,8 +1,9 @@
 package jsonwebtoken
 
 import (
-	"errors"
+	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"strconv"
 	"time"
 )
 
@@ -53,10 +54,10 @@ func (s service) ValidateToken(token string) (int, error) {
 	}
 
 	claims, ok := jwtToken.Claims.(jwt.MapClaims)
-	userID, ok := claims["sub"].(int)
+	userID, err := strconv.ParseInt(fmt.Sprintf("%.f", claims["sub"]), 10, 64)
 	if !ok {
-		return 0, errors.New("Invalid claims sub entry")
+		return 0, err
 	}
 
-	return userID, nil
+	return int(userID), nil
 }

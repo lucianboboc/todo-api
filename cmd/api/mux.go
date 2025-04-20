@@ -25,7 +25,7 @@ func newServeMux(db database.Database, conf *config.Config, logger *slog.Logger)
 	usersService := users.NewService(securityService, usersRepository)
 	jwtService := jsonwebtoken.NewService(conf.JWTSecret)
 	todosService := todos.NewService(todosRepository)
-	authService := auth.NewService(usersService, securityService, jwtService)
+	authService := auth.NewService(usersService, securityService, jwtService, logger)
 
 	authHandler := authhandler.NewHandler(authService, logger)
 	authHandler.RegisterRoutes(mux)

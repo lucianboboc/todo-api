@@ -28,7 +28,8 @@ func (r repository) Create(ctx context.Context, todo *Todo) error {
 	INSERT INTO todos (text, completed, user_id) VALUES ($1, $2, $3)
 	RETURNING id, created_at
 `
-	err := r.DB.QueryRowContext(ctx, query, todo.Text, todo.Completed, todo.UserID).Scan(
+	args := []any{todo.Text, todo.Completed, todo.UserID}
+	err := r.DB.QueryRowContext(ctx, query, args...).Scan(
 		&todo.ID,
 		&todo.CreatedAt,
 	)
