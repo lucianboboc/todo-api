@@ -2,6 +2,7 @@ package authhandler
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/lucianboboc/todo-api/internal/domain/auth"
 	"github.com/lucianboboc/todo-api/internal/transport/http/responses"
 	"github.com/lucianboboc/todo-api/internal/transport/http/validators"
@@ -45,7 +46,7 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := h.authService.Login(r.Context(), data.Email, data.Password)
 	if err != nil {
-		responses.ErrorResponse(w, r, err, h.logger)
+		responses.ErrorResponse(w, r, mapToAPIError(err), h.logger)
 		return
 	}
 
@@ -53,4 +54,13 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		"token": token,
 	}
 	responses.JsonResponse(w, r, http.StatusOK, resp, h.logger)
+}
+
+func mapToAPIError(err error) error {
+	switch {
+	case errors.Is(err, auth.ErrUserUnauthorized):
+		return ErrInvalidCredentials
+	default:
+		return err
+	}
 }

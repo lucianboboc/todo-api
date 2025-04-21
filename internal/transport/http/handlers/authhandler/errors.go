@@ -1,7 +1,7 @@
 package authhandler
 
 import (
-	"github.com/lucianboboc/todo-api/internal/domain/apierrors"
+	"github.com/lucianboboc/todo-api/internal/common/apierrors"
 	"net/http"
 )
 

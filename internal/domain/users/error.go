@@ -1,22 +1,8 @@
 package users
 
 import (
-	"github.com/lucianboboc/todo-api/internal/domain/apierrors"
-	"net/http"
+	"errors"
 )
 
-const errorDomain = "users"
-
-var ErrUserAlreadyExists = apierrors.APIError{
-	Domain:     errorDomain,
-	StatusCode: http.StatusConflict,
-	Message:    "User already exists",
-	Key:        "UserAlreadyExists",
-}
-
-var ErrUserNotFound = apierrors.APIError{
-	Domain:     errorDomain,
-	StatusCode: http.StatusNotFound,
-	Message:    "User not found",
-	Key:        "UserNotFound",
-}
+var ErrUserAlreadyExists = errors.New("user already exists")
+var ErrUserNotFound = errors.New("user not found")

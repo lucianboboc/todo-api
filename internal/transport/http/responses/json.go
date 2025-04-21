@@ -3,7 +3,7 @@ package responses
 import (
 	"encoding/json"
 	"errors"
-	"github.com/lucianboboc/todo-api/internal/domain/apierrors"
+	"github.com/lucianboboc/todo-api/internal/common/apierrors"
 	"log/slog"
 	"net/http"
 )

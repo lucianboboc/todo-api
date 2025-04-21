@@ -1,7 +1,7 @@
 package todoshandler
 
 import (
-	"github.com/lucianboboc/todo-api/internal/domain/apierrors"
+	"github.com/lucianboboc/todo-api/internal/common/apierrors"
 	"net/http"
 )
 
@@ -26,4 +26,11 @@ var ErrInvalidTodoID = apierrors.APIError{
 	StatusCode: http.StatusBadRequest,
 	Message:    "Invalid todo ID",
 	Key:        "InvalidTodoID",
+}
+
+var ErrTodoNotFound = apierrors.APIError{
+	Domain:     errorDomain,
+	StatusCode: http.StatusNotFound,
+	Message:    "Todo not found",
+	Key:        "TodoNotFound",
 }

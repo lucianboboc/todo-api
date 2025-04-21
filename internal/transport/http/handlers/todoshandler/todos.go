@@ -2,6 +2,7 @@ package todoshandler
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/lucianboboc/todo-api/internal/domain/todos"
 	"github.com/lucianboboc/todo-api/internal/domain/users"
 	"github.com/lucianboboc/todo-api/internal/intrastructure/jsonwebtoken"
@@ -98,7 +99,7 @@ func (h *Handler) getTodoHandler(w http.ResponseWriter, r *http.Request) {
 
 	todo, err := h.todoService.GetById(r.Context(), idInt)
 	if err != nil {
-		responses.ErrorResponse(w, r, err, h.logger)
+		responses.ErrorResponse(w, r, mapToAPIError(err), h.logger)
 		return
 	}
 
@@ -106,4 +107,13 @@ func (h *Handler) getTodoHandler(w http.ResponseWriter, r *http.Request) {
 		"data": todo,
 	}
 	responses.JsonResponse(w, r, http.StatusOK, resp, h.logger)
+}
+
+func mapToAPIError(err error) error {
+	switch {
+	case errors.Is(err, todos.ErrTodoNotFound):
+		return ErrTodoNotFound
+	default:
+		return err
+	}
 }

@@ -2,6 +2,7 @@ package usershandler
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/lucianboboc/todo-api/internal/domain/users"
 	"github.com/lucianboboc/todo-api/internal/intrastructure/jsonwebtoken"
 	"github.com/lucianboboc/todo-api/internal/transport/http/middleware"
@@ -61,7 +62,7 @@ func (h *Handler) createUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.usersService.Create(r.Context(), user, data.Password)
 	if err != nil {
-		responses.ErrorResponse(w, r, err, h.logger)
+		responses.ErrorResponse(w, r, mapToAPIError(err), h.logger)
 		return
 	}
 
@@ -78,7 +79,7 @@ func (h *Handler) getUsersHandler(w http.ResponseWriter, r *http.Request) {
 	if email != "" && validators.ValidateEmail(email) {
 		user, err := h.usersService.GetByEmail(r.Context(), email)
 		if err != nil {
-			responses.ErrorResponse(w, r, err, h.logger)
+			responses.ErrorResponse(w, r, mapToAPIError(err), h.logger)
 			return
 		}
 		resp := responses.Envelope{
@@ -111,7 +112,7 @@ func (h *Handler) getUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.usersService.GetByID(r.Context(), idInt)
 	if err != nil {
-		responses.ErrorResponse(w, r, err, h.logger)
+		responses.ErrorResponse(w, r, mapToAPIError(err), h.logger)
 		return
 	}
 
@@ -119,4 +120,15 @@ func (h *Handler) getUserHandler(w http.ResponseWriter, r *http.Request) {
 		"data": user,
 	}
 	responses.JsonResponse(w, r, http.StatusOK, resp, h.logger)
+}
+
+func mapToAPIError(err error) error {
+	switch {
+	case errors.Is(err, users.ErrUserNotFound):
+		return ErrUserNotFound
+	case errors.Is(err, users.ErrUserAlreadyExists):
+		return ErrUserAlreadyExists
+	default:
+		return err
+	}
 }
